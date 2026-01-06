@@ -1,7 +1,6 @@
 const WorkflowsModel = require('../../models/Workflows');
 const WorkflowNodesModel = require('../../models/WorkflowNodes');
 const WorkflowNodeUsersModel = require('../../models/WorkflowNodeUsers');
-const TicketApprovalsModel = require('../../models/TicketApprovals');
 
 /**
  * Migration: Create workflow tables
@@ -51,9 +50,7 @@ const up = async () => {
       ADD COLUMN IF NOT EXISTS created_by INTEGER REFERENCES users(id);
     `);
 
-    // 5. Create ticket_approvals table
-    console.log('Creating ticket_approvals table...');
-    await TicketApprovalsModel.createTable();
+
 
     // 6. Create indexes for better performance
     console.log('Creating indexes...');
@@ -65,7 +62,6 @@ const up = async () => {
     await query('CREATE INDEX IF NOT EXISTS idx_ticket_approvals_ticket_id ON ticket_approvals(ticket_id);');
     await query('CREATE INDEX IF NOT EXISTS idx_ticket_approvals_node_id ON ticket_approvals(node_id);');
     await query('CREATE INDEX IF NOT EXISTS idx_ticket_approvals_user_id ON ticket_approvals(user_id);');
-    await query('CREATE INDEX IF NOT EXISTS idx_ticket_approvals_status ON ticket_approvals(status);');
     await query('CREATE INDEX IF NOT EXISTS idx_tickets_workflow_id ON tickets(workflow_id);');
     await query('CREATE INDEX IF NOT EXISTS idx_tickets_approval_status ON tickets(approval_status);');
 

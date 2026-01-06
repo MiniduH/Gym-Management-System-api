@@ -3,15 +3,15 @@ const bcrypt = require('bcryptjs');
 
 // Role mapping: numeric IDs to role names
 const ROLE_MAP = {
-  1: 'admin',
-  2: 'moderator',
-  3: 'user',
+  1: 'user',      // Regular user
+  2: 'admin',     // Administrator
+  3: 'trainer',   // Trainer
 };
 
 const REVERSE_ROLE_MAP = {
-  'admin': 1,
-  'moderator': 2,
-  'user': 3,
+  'user': 1,
+  'admin': 2,
+  'trainer': 3,
 };
 
 class UsersModel {
@@ -43,7 +43,7 @@ class UsersModel {
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         phone VARCHAR(20),
-        role VARCHAR(50) DEFAULT 'user' CHECK (role IN ('user', 'moderator', 'admin')),
+        role VARCHAR(50) DEFAULT 'user' CHECK (role IN ('user', 'trainer', 'admin')),
         status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
         department VARCHAR(255),
         is_verified BOOLEAN DEFAULT FALSE,

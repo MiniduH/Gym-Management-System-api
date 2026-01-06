@@ -21,6 +21,24 @@ class UsersController {
         }
       }
 
+      // Handle type parameter for role assignment
+      if (user.type) {
+        // Map type to role
+        const typeToRole = {
+          'user': 1,      // Regular user
+          'admin': 2,     // Administrator
+          'trainer': 3,   // Trainer
+        };
+
+        if (!typeToRole[user.type]) {
+          res.status(400).json({ error: `Invalid type: ${user.type}. Must be 'user', 'admin', or 'trainer'` });
+          return;
+        }
+
+        user.role = typeToRole[user.type];
+        delete user.type; // Remove type from user object
+      }
+
       const newUser = await UsersModel.create(user);
       res.status(201).json({ success: true, data: newUser });
     } catch (error) {
