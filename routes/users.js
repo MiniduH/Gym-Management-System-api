@@ -10,6 +10,7 @@ const {
   getUserCount,
   getUsersByRole,
   getUsersByStatus,
+  getUserBarcode,
 } = require('../controllers/usersController');
 
 const router = express.Router();
@@ -38,6 +39,9 @@ router.get('/username/:username', getUserByUsername);
 // Get user by email
 router.get('/email/:email', getUserByEmail);
 
+// Get user barcode data
+router.get('/:id/barcode', getUserBarcode);
+
 /**
  * POST Routes
  */
@@ -53,10 +57,6 @@ router.put('/:id', updateUser);
 /**
  * DELETE Routes
  */
-// Delete user
-router.delete('/:id', deleteUser);
-
-module.exports = router;
 // Delete user
 router.delete('/:id', deleteUser);
 

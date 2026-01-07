@@ -203,6 +203,45 @@ class UsersController {
       res.status(500).json({ error: 'Failed to get users by status' });
     }
   }
+
+  static async getUserBarcode(req, res) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({ error: 'User ID is required' });
+        return;
+      }
+
+      const user = await UsersModel.getById(parseInt(id, 10));
+      if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      // Generate barcode value: GMS + 6-digit user ID
+      const barcodeValue = `GMS${user.id.toString().padStart(6, '0')}`;
+
+      res.status(200).json({
+        success: true,
+        data: {
+          userId: user.id,
+          barcodeValue,
+          user: {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error in getUserBarcode:', error);
+      res.status(500).json({ error: 'Failed to generate user barcode' });
+    }
+  }
 }
 
 module.exports = UsersController;

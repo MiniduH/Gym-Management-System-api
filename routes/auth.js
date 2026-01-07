@@ -9,6 +9,7 @@ const {
   logoutAllDevices,
   getUserTokens,
   revokeSpecificToken,
+  barcodeLogin,
 } = require('../controllers/authController');
 const { auth } = require('../middleware/auth');
 
@@ -23,6 +24,9 @@ router.post('/register', register);
 
 // User login
 router.post('/login', login);
+
+// Barcode login for admin users
+router.post('/barcode-login', barcodeLogin);
 
 // Refresh token
 router.post('/refresh-token', refreshToken);

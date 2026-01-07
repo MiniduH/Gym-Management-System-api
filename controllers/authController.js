@@ -511,6 +511,109 @@ class AuthController {
   }
 
   /**
+   * Barcode login for admin users
+   */
+  static async barcodeLogin(req, res) {
+    try {
+      const { userId } = req.body;
+
+      if (!userId) {
+        res.status(400).json({ error: 'User ID is required' });
+        return;
+      }
+
+      // Get user by ID
+      const user = await UsersModel.getById(parseInt(userId, 10));
+      if (!user) {
+        console.warn('⚠️ Barcode login attempt with non-existent user ID:', userId);
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      // Validate user is admin
+      if (user.role !== 'admin') {
+        console.warn('⚠️ Barcode login attempt by non-admin user:', { userId: user.id, role: user.role });
+        res.status(403).json({ error: 'Access denied. Only admin users can login via barcode.' });
+        return;
+      }
+
+      // Check if user is active
+      if (user.status !== 'active') {
+        console.warn('⚠️ Barcode login attempt by inactive user:', { userId: user.id, status: user.status });
+        res.status(403).json({ error: 'Account is not active' });
+        return;
+      }
+
+      // Get role and permissions
+      const role = await RolesModel.getByName(user.role);
+      let permissions = [];
+
+      if (role) {
+        const permissionIds = Array.isArray(role.permissions)
+          ? role.permissions
+          : JSON.parse(role.permissions || '[]');
+
+        // Fetch permission details
+        permissions = await Promise.all(
+          permissionIds.map(async (permId) => {
+            const permission = await PermissionsModel.getById(permId);
+            return permission ? { id: permission.id, name: permission.name } : null;
+          })
+        );
+        permissions = permissions.filter(p => p !== null);
+      }
+
+      // Generate tokens
+      const { accessToken, refreshToken, expiresAt, refreshExpiresAt } =
+        AuthController.generateTokens(user.id, user.email, user.username);
+
+      // Store tokens in database
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.get('user-agent') || '';
+
+      await AuthTokenModel.create({
+        user_id: user.id,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        expires_at: expiresAt,
+        refresh_expires_at: refreshExpiresAt,
+        ip_address: ipAddress,
+        user_agent: userAgent,
+      });
+
+      // Update last login
+      await UsersModel.update(user.id, { last_login: new Date() });
+
+      console.log('✓ Admin logged in successfully via barcode:', { userId: user.id, username: user.username });
+
+      res.status(200).json({
+        success: true,
+        message: 'Barcode login successful',
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            role: user.role,
+            permissions,
+          },
+          tokens: {
+            accessToken,
+            refreshToken,
+            expiresAt,
+            tokenType: 'Bearer',
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error in barcodeLogin:', error);
+      res.status(500).json({ error: 'Failed to login via barcode' });
+    }
+  }
+
+  /**
    * Cleanup expired tokens (can be called periodically)
    */
   static async cleanupExpiredTokens(req, res) {
