@@ -10,8 +10,8 @@ class UsersController {
         'first_name',
         'last_name',
         'username',
-        'email',
         'password',
+        'phone',
       ];
 
       for (const field of requiredFields) {
@@ -213,7 +213,14 @@ class UsersController {
         return;
       }
 
-      const user = await UsersModel.getById(parseInt(id, 10));
+      // Validate that the ID is a valid integer
+      const userId = parseInt(id, 10);
+      if (isNaN(userId) || userId <= 0 || userId > 2147483647) {
+        res.status(400).json({ error: 'Invalid user ID format' });
+        return;
+      }
+
+      const user = await UsersModel.getById(userId);
       if (!user) {
         res.status(404).json({ error: 'User not found' });
         return;

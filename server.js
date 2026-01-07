@@ -21,6 +21,9 @@ const permissionsRoutes = require('./routes/permissions');
 // Import Roles routes
 const rolesRoutes = require('./routes/roles');
 
+// Import Provinces routes
+const provincesRoutes = require('./routes/provinces');
+
 // Import Workflow routes
 const workflowsRoutes = require('./routes/workflows');
 const workflowNodesRoutes = require('./routes/workflowNodes');
@@ -74,6 +77,9 @@ app.use('/api/permissions', permissionsRoutes);
 
 // Roles Routes
 app.use('/api/roles', rolesRoutes);
+
+// Provinces Routes
+app.use('/api/provinces', provincesRoutes);
 
 // Workflows Routes
 app.use('/api/workflows', workflowsRoutes);

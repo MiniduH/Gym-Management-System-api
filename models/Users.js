@@ -71,6 +71,7 @@ class UsersModel {
       email,
       password,
       phone,
+      address,
       role,
       status,
       department,
@@ -92,13 +93,14 @@ class UsersModel {
         email,
         password,
         phone,
+        address,
         role,
         status,
         department,
         is_verified,
         metadata
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *;
     `;
 
@@ -108,7 +110,8 @@ class UsersModel {
       username,
       email,
       hashedPassword,
-      phone || null,
+      phone,
+      JSON.stringify(address || {}),
       roleString,
       status || 'active',
       department || null,

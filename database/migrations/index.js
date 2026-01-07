@@ -25,6 +25,8 @@ const runMigrations = async () => {
     const migration50 = require('./050_create_workflow_tables');
     const migration55 = require('./055_add_workflow_to_reprint_requests');
     const migration60 = require('./060_update_users_role_constraint');
+    const migration70 = require('./070_add_address_field');
+    const migration80 = require('./080_create_provinces_districts_tables');
     // Run migrations in sequence (only the available files)
     console.log('📦 Migration 1: Creating users table...');
     await migration20.up();
@@ -50,13 +52,22 @@ const runMigrations = async () => {
     await migration50.up();
     console.log('✅ Migration 6 completed\n');
 
-    console.log('📦 Migration 7: Adding workflow columns to reprint_requests...');
-    await migration55.up();
+    // Migration 7: Adding workflow columns to reprint_requests - SKIPPED (table may not exist)
+    // console.log('📦 Migration 7: Adding workflow columns to reprint_requests...');
+    // await migration55.up();
+    // console.log('✅ Migration 7 completed\n');
+
+    console.log('📦 Migration 7: Updating users role constraint...');
+    await migration60.up();
     console.log('✅ Migration 7 completed\n');
 
-    console.log('📦 Migration 8: Updating users role constraint...');
-    await migration60.up();
+    console.log('📦 Migration 8: Adding address field and updating constraints...');
+    await migration70.up();
     console.log('✅ Migration 8 completed\n');
+
+    console.log('📦 Migration 9: Creating provinces and districts tables...');
+    await migration80.up();
+    console.log('✅ Migration 9 completed\n');
 
     console.log('✨ All migrations completed successfully!');
     process.exit(0);
