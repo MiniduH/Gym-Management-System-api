@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const provincesController = require('../controllers/provincesController');
-const { auth } = require('../middleware/auth');
 
 /**
  * Provinces Routes
@@ -9,9 +8,9 @@ const { auth } = require('../middleware/auth');
  */
 
 // GET /api/provinces - Get all provinces with their districts
-router.get('/', auth, provincesController.getProvincesWithDistricts);
+router.get('/', provincesController.getProvincesWithDistricts);
 
 // GET /api/provinces/:provinceId - Get a specific province with its districts
-router.get('/:provinceId', auth, provincesController.getProvinceWithDistricts);
+router.get('/:provinceId', provincesController.getProvinceWithDistricts);
 
 module.exports = router;
